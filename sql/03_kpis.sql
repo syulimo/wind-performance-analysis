@@ -32,3 +32,14 @@ WITH s AS (SELECT date_trunc('month', ts_utc) AS month,
 SELECT month, scada_kwh, meter_kwh, meter_kwh / scada_kwh AS meter_to_scada,
        est_downtime_kwh, operator_unavail_kwh, operator_curtail_kwh
 FROM s JOIN m USING (month) ORDER BY month;
+
+-- Monthly lost energy by turbine and driver (feeds the asset P&L and variance workbook).
+CREATE OR REPLACE VIEW loss_monthly AS
+SELECT turbine, date_trunc('month', ts_utc) AS month,
+       SUM(COALESCE(power_kw, 0)) / 6000                                             AS actual_mwh,
+       SUM(COALESCE(expected_kw, 0)) / 6000                                          AS potential_mwh,
+       SUM(CASE WHEN state = 'downtime'         THEN loss_kw ELSE 0 END) / 6000      AS downtime_mwh,
+       SUM(CASE WHEN state = 'underperformance' THEN loss_kw ELSE 0 END) / 6000      AS underperf_mwh,
+       SUM(CASE WHEN state = 'icing_suspected'  THEN loss_kw ELSE 0 END) / 6000      AS icing_mwh,
+       SUM(CASE WHEN state = 'curtailment'      THEN loss_kw ELSE 0 END) / 6000      AS curtailment_mwh
+FROM classified GROUP BY 1, 2 ORDER BY 1, 2;

@@ -2,3 +2,4 @@ duckdb>=1.1
 pandas>=2.2
 numpy>=1.26
 pytest>=8
+openpyxl>=3.1

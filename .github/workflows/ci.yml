@@ -9,4 +9,4 @@ jobs:
         with: {python-version: "3.12"}
       - run: pip install -r requirements.txt
       - run: python -m pytest -q
-      - run: bash scripts/get_data.sh && python -m src.wpa.pipeline && python -m src.wpa.build_dashboard
+      - run: bash scripts/get_data.sh && python -m src.wpa.pipeline && python -m src.wpa.build_dashboard && python -m src.wpa.build_asset_pnl

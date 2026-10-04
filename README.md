@@ -35,6 +35,25 @@ flags turbines drifting away from the fleet. Output is a single-file dashboard f
 * **Traceability:** the pipeline's downtime estimate (281 MWh) is within 9 percent of the operator's unavailability
   counter (308 MWh).
 
+## Asset P&L and variance workbook
+
+`outputs/asset_pnl_variance.xlsx` turns the same results into an asset-management view of 2015
+(built by `src/wpa/build_asset_pnl.py`; 514 live Excel formulas, zero errors).
+
+* **Budget set ex ante:** 2014 potential energy (11,454.8 MWh) long-term corrected with an ERA5 wind
+  index (1999 to 2013 mean is 1.164x 2014), giving a P50 proxy of 13,336.5 MWh for 2015.
+* **Variance bridge, 2015:** actual 13,399.1 MWh was 62.6 MWh (0.5 percent) above budget. Wind added
+  142.9 MWh; operations lost 273.0 MWh (downtime 171.1, underperformance 96.7, icing 3.3,
+  curtailment 1.9); other effects (curve scatter, records excluded by data quality) added 192.6.
+  Downtime is the largest operational driver. Components are rounded to 0.1 MWh, so they sum to 62.5.
+* **Independent check:** ERA5 says 2015 was 1.1 percent windier than the long term, and SCADA
+  potential energy came in 1.1 percent above budget.
+* **Turbine ranking:** R80790 ranks first, with 102.1 MWh lost in 2015.
+* **Reforecast:** actuals through a chosen month plus budget, two methods, back-tested against the
+  known 2015 outcome.
+* **Revenue** uses an editable tariff assumption (82 €/MWh, the 2008 French onshore feed-in tariff base
+  level before indexation). Costs are not modelled because no site cost data are public.
+
 ## Method
 
 1. **Staging (`sql/01_staging.sql`).** Typed, UTC-aligned SCADA; plant meter; ERA5 pressure (DuckDB).
@@ -71,6 +90,7 @@ pip install -r requirements.txt
 bash scripts/get_data.sh
 python -m src.wpa.pipeline          # writes outputs/*.csv and outputs/results.json
 python -m src.wpa.build_dashboard   # writes outputs/dashboard.html (self-contained, works offline)
+python -m src.wpa.build_asset_pnl   # writes outputs/asset_pnl_variance.xlsx
 pytest -q                           # 11 tests: physics, curve fitting, classification, loss identity, SQL rules
 ```
 

@@ -168,11 +168,12 @@ def main() -> dict:
                SUM(COALESCE(power_kw,0)) / (MAX(rated_kw)*COUNT(*)) AS capacity_factor
         FROM classified GROUP BY 1,2 ORDER BY 1,2""").df()
     anemo = con.execute("SELECT * FROM anemometer_ratio_quarterly").df()
+    loss_monthly = con.execute("SELECT * FROM loss_monthly").df()
     states = con.execute("SELECT state, COUNT(*) AS records FROM classified GROUP BY 1 ORDER BY 2 DESC").df()
 
     for name, frame in {"dq_summary": dq, "kpi_monthly": kpi, "loss_by_driver": losses,
                         "meter_reconciliation": recon, "kpi_yearly": yearly, "state_counts": states,
-                        "anemometer_ratio_quarterly": anemo}.items():
+                        "anemometer_ratio_quarterly": anemo, "loss_monthly": loss_monthly}.items():
         frame.to_csv(OUT / f"{name}.csv", index=False)
     curve_rows = [c.assign(turbine=t) for t, c in curves.items()]
     pd.concat(curve_rows).to_csv(OUT / "reference_power_curves.csv", index=False)
