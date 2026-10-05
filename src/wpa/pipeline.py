@@ -39,7 +39,7 @@ def run_sql(con: duckdb.DuckDBPyConnection, name: str) -> None:
 
 
 def air_density(pres_pa: pd.Series, temp_c: pd.Series, hub_height_m: float) -> pd.Series:
-    """Hub-height air density from surface pressure (barometric correction) and nacelle temperature."""
+    """Hub-height air density from surface pressure (barometric correction) and outdoor temperature (SCADA Ot_avg)."""
     t_k = temp_c + 273.15
     p_hub = pres_pa * np.exp(-G * hub_height_m / (R_DRY * t_k))
     return p_hub / (R_DRY * t_k)
