@@ -14,11 +14,11 @@ flags turbines drifting away from the fleet. Output is a single-file dashboard f
 
 | Driver | Lost energy (MWh, 2014 to 2015) |
 |---|---|
-| Downtime | 280.9 |
+| Downtime | 280.8 |
 | Underperformance (30 min or longer) | 168.0 |
 | Suspected icing | 10.4 |
 | Curtailment | 4.4 |
-| **Total** | **463.7** (1.8 percent of potential; 24,630 MWh produced) |
+| **Total** | **463.7** (1.8 percent of potential; 24,630 MWh produced; components rounded) |
 
 * **R80790 is the priority asset.** Highest downtime loss (105.7 MWh) and its underperformance loss rose from 20.4 MWh
   (2014) to 39.1 MWh (2015). Reference curves are fitted on 2014 only, so 2015 is out of sample. Its performance index
@@ -61,11 +61,11 @@ flags turbines drifting away from the fleet. Output is a single-file dashboard f
    (identical value for 1 hour or more), out of range (wind speed, power above 105 percent of rated, temperature), and
    power reported without wind.
 3. **Air density and normalization (`src/wpa/pipeline.py`).** Hub-height density from ERA5 surface pressure with a
-   barometric correction and nacelle temperature; wind speed normalized per IEC 61400-12-1.
+   barometric correction and outdoor temperature (Ot_avg); wind speed normalized per IEC 61400-12-1.
 4. **Reference power curves.** Per turbine, fitted on 2014 clean records only (no DQ flag, producing, above 3 C,
    no curtailment): 0.5 m/s binned median with one outlier-rejection pass, forced monotone and capped at rated.
 5. **State classification, in priority order:** unassessable (any DQ flag), downtime (power at or below 1 percent
-   of rated while expected power is 50 kW or more), curtailment (plant curtailment signal), suspected icing (3 C or
+   of rated while expected power is 50 kW or more), curtailment (plant curtailment signal), suspected icing (2 C or
    colder and below 75 percent of expected), underperformance (below 85 percent of expected), normal. Icing and
    underperformance must persist for 3 consecutive records (30 minutes); isolated 10-minute dips are curve scatter.
    Loss is expected minus actual power for loss states and zero otherwise.
